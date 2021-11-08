@@ -16,8 +16,6 @@ export const signup = asyncHandler(async (req, res, next) => {
 
 	const { email, password } = req.body;
 
-	console.log('test running');
-
 	const user = await User.create({ email, password });
 
 	let token = await EmailVerificationToken.create({ user: user._id });
@@ -70,7 +68,7 @@ export const socialSignin = asyncHandler(async (req, res, next) => {
 	let user = await User.findOne({ email, social: { [social]: token } });
 
 	if (!user) {
-		user = User.findOne({ email });
+		user = await User.findOne({ email });
 		if (user) {
 			user.social[social] = token;
 			user.save();
@@ -85,7 +83,7 @@ export const socialSignin = asyncHandler(async (req, res, next) => {
 		}
 	}
 
-	user = User.findOne({ email });
+	user = await User.findOne({ email });
 
 	sendTokenResponse(res, user);
 });
@@ -123,7 +121,12 @@ export const updateDetails = asyncHandler(async (req, res, next) => {
 });
 
 export const updatePassword = asyncHandler(async (req, res, next) => {
-	const user = await User.findById(req.user.id).select('+password');
+	await req.validate({
+		currentPassword: 'required|string|min:6',
+		newPassword: 'required|string|min:6|confirmed',
+	});
+
+	const user = await User.findById(req.user._id).select('+password');
 
 	// Check current password
 	if (!(await user.matchPassword(req.body.currentPassword))) {
