@@ -1,8 +1,8 @@
 import jwt from 'jsonwebtoken';
 import asyncHandler from './async';
-import ErrorResponse from '../utils/errorResponse.util';
-import User from '../models/User';
-import Admin from '../models/Admin';
+import User from '../models/User/UserProfile';
+// import Admin from '../models/Admin';
+import { errorResponse } from '../helpers/response';
 
 // Protect routes
 const protect = asyncHandler(async (req, res, next) => {
@@ -19,7 +19,7 @@ const protect = asyncHandler(async (req, res, next) => {
 	}
 	// Make sure token exists
 	if (!token) {
-		return next(new ErrorResponse('Not authorized to access this route', 401));
+		return errorResponse(next, 'Not authorized to access this route', 401);
 	}
 
 	try {
@@ -29,7 +29,7 @@ const protect = asyncHandler(async (req, res, next) => {
 		req.user = user;
 		next();
 	} catch (err) {
-		return next(new ErrorResponse('Not authorized to access this route', 401));
+		return errorResponse(next, 'Not authorized to access this route', 401);
 	}
 });
 
@@ -49,16 +49,16 @@ const admin = asyncHandler(async (req, res, next) => {
 	// }
 	// Make sure token exists
 	if (!token) {
-		return next(new ErrorResponse('Not authorized to access this route', 401));
+		return errorResponse(next, 'Not authorized to access this route', 401);
 	}
 
 	try {
 		// Verify token
 		const decoded = jwt.verify(token, process.env.JWT_SECRET);
-		req.admin = await Admin.findById(decoded.id);
+		// req.admin = await Admin.findById(decoded.id);
 		next();
 	} catch (err) {
-		return next(new ErrorResponse('Not authorized to access this route', 401));
+		return errorResponse(next, 'Not authorized to access this route', 401);
 	}
 });
 
@@ -66,9 +66,7 @@ const admin = asyncHandler(async (req, res, next) => {
 const authorizeAdmin = (...roles) => {
 	return (req, res, next) => {
 		if (req.admin.userType !== 'Admin') {
-			return next(
-				new ErrorResponse('Not authorized to access this route', 403)
-			);
+			return errorResponse(next, 'Not authorized to access this route', 403);
 		}
 		next();
 	};
@@ -77,11 +75,10 @@ const authorizeAdmin = (...roles) => {
 const authorize = (...roles) => {
 	return (req, res, next) => {
 		if (!roles.includes(req.user.role)) {
-			return next(
-				new ErrorResponse(
-					`User role ${req.user.role} is not authorized to access this route`,
-					403
-				)
+			return errorResponse(
+				next,
+				`User role ${req.user.role} is not authorized to access this route`,
+				403
 			);
 		}
 		next();
