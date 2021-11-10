@@ -7,6 +7,7 @@ import fs from 'fs';
 
 //models
 import User from '../models/User/UserProfile';
+import UserWorkExperience from '../models/User/UserWorkExperience';
 
 // eslint-disable-next-line no-unused-vars
 export const editProfile = asyncHandler(async (req, res, next) => {
@@ -97,6 +98,28 @@ export const editAddWorkExperience = asyncHandler(async (req, res, next) => {
         'date.end': 'required|date',
 	});
 
+    const {company, title, date} = req.body;
+
+    let experience;
+
+    if(req.params.experienceId != null) {
+        // get and update work experience
+        experience = await UserWorkExperience.findById(req.params.experienceId);
+        experience.company = company;
+        experience.title = title;
+        experience.date.start = date.start;
+        experience.date.end = date.end;
+
+        await experience.save();
+
+    } else {
+        
+        // create new work experience
+        experience = await UserWorkExperience.create({ user: req.user.id, company, title, date });
+    }
+
+
+    successResponse(res, 'ok', {experience});
 });
 
 // eslint-disable-next-line no-unused-vars
