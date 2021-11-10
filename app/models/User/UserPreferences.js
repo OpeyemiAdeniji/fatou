@@ -2,6 +2,11 @@ import mongoose from 'mongoose';
 
 const UserPreferencesSchema = mongoose.Schema(
 	{
+		user: {
+			type: mongoose.Schema.ObjectId,
+			ref: 'UserProfile',
+            required: true,
+		},
 		receiveEmails: {
 			partners: {
 				type: Boolean,

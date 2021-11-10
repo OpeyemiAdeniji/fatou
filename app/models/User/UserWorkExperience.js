@@ -1,54 +1,24 @@
 import mongoose from 'mongoose';
-import { mentorshipOpportunities } from '../helpers/constants';
 
 const UserWorkExperienceSchema = mongoose.Schema(
-	{
+	{	
+		user: {
+			type: mongoose.Schema.ObjectId,
+			ref: 'UserProfile',
+            required: true,
+		},
 		company: {
 			type: String,
 			required: [true, 'Please add a company name'],
 		},
-		company2: {
+		title: {
 			type: String,
-			required: [true, 'Please add a company name'],
+			required: [true, 'Please add a job title'],
 		},
 		date: {
-			start: Date,
-			end: Date,
-		},
-		mentorship: {
-			seeking: {
-				isSeeking: {
-					type: Boolean,
-					default: false,
-				},
-				opportunities: {
-					required: [
-						function () {
-							return this.mentorship.seeking == true;
-						},
-						'a mentorship opportunity is required',
-					],
-					type: [String],
-					enum: mentorshipOpportunities,
-				},
-			},
-			open: {
-				isOpen: {
-					type: Boolean,
-					default: false,
-				},
-				opportunities: {
-					required: [
-						function () {
-							return this.mentorship.open == true;
-						},
-						'a mentorship opportunity is required',
-					],
-					type: [String],
-					enum: mentorshipOpportunities,
-				},
-			},
-		},
+			start: String,
+			end: String,
+		}
 	},
 	{ timestamps: true }
 );

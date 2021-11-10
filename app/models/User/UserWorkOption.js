@@ -1,7 +1,12 @@
 import mongoose from 'mongoose';
 
 const UserWorkOptionSchema = mongoose.Schema(
-	{
+	{	
+		user: {
+			type: mongoose.Schema.ObjectId,
+			ref: 'UserProfile',
+            required: true,
+		},
 		looking: {
 			type: Boolean,
 			default: false,

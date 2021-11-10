@@ -93,7 +93,7 @@ const UserProfileSchema = mongoose.Schema(
 			type: String,
 		},
 		workExperience: {
-			type: mongoose.Schema.ObjectId,
+			type: [mongoose.Schema.ObjectId],
 			ref: 'UserWorkExperience',
 		},
 		contacts: [

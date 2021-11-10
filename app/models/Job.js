@@ -55,7 +55,7 @@ const JobSchema = mongoose.Schema(
 			{
 				title: {
 					type: String,
-					required: [true, "A job interview process' round title is required"],
+					required: [true, 'A job interview process\' round title is required'],
 				},
 				description: {
 					type: String,
