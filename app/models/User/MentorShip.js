@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { mentorshipOpportunities } from '../helpers/constants';
+import { mentorshipOpportunities } from '../../helpers/constants';
 
 const UserMentorShipAvailSchema = mongoose.Schema(
 	{

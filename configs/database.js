@@ -15,7 +15,7 @@ const ConnectDB = async () => {
 	!TESTING &&
 		console.log(
 			`
-                                                ------------------ MongoDB Connected: ${conn.connection.host} -----------------
+        ----------- MongoDB Connected: ${conn.connection.host} ----------
   `.cyan.bold
 		);
 };
