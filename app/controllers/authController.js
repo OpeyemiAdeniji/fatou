@@ -88,7 +88,6 @@ export const socialSignin = asyncHandler(async (req, res, next) => {
 	sendTokenResponse(res, user);
 });
 
-
 // eslint-disable-next-line no-unused-vars
 export const logout = asyncHandler(async (req, res, next) => {
 	res.cookie('token', 'none', {
@@ -99,16 +98,12 @@ export const logout = asyncHandler(async (req, res, next) => {
 	successResponse(res, '', {});
 });
 
-
-
 // eslint-disable-next-line no-unused-vars
 export const getAuthUser = asyncHandler(async (req, res, next) => {
 	const user = await User.findById(req.user._id);
 
 	successResponse(res, '', { user });
 });
-
-
 
 // eslint-disable-next-line no-unused-vars
 export const updateDetails = asyncHandler(async (req, res, next) => {
@@ -124,8 +119,6 @@ export const updateDetails = asyncHandler(async (req, res, next) => {
 
 	successResponse(res, '', { user });
 });
-
-
 
 export const updatePassword = asyncHandler(async (req, res, next) => {
 	await req.validate({
@@ -146,11 +139,9 @@ export const updatePassword = asyncHandler(async (req, res, next) => {
 	sendTokenResponse(res, user);
 });
 
-
-
 export const forgotPassword = asyncHandler(async (req, res, next) => {
 	await req.validate({
-		email: 'required|string|email',
+		email: 'required|email',
 	});
 
 	const user = await User.findOne({ email: req.body.email });
@@ -191,8 +182,6 @@ export const forgotPassword = asyncHandler(async (req, res, next) => {
 	successResponse(res, '', { user });
 });
 
-
-
 export const resetPassword = asyncHandler(async (req, res, next) => {
 	await req.validate({
 		password: 'required|string|confirmed',
@@ -220,8 +209,6 @@ export const resetPassword = asyncHandler(async (req, res, next) => {
 
 	sendTokenResponse(res, user);
 });
-
-
 
 export const getEmailVerificationToken = asyncHandler(
 	async (req, res, next) => {
@@ -254,8 +241,6 @@ export const getEmailVerificationToken = asyncHandler(
 		);
 	}
 );
-
-
 
 export const verifyEmail = asyncHandler(async (req, res, next) => {
 	// console.log(req.params.token);
@@ -290,8 +275,6 @@ export const verifyEmail = asyncHandler(async (req, res, next) => {
 
 	successResponse(res, 'Email verification is successful', {}, 200);
 });
-
-
 
 // Get token from model, create cookie and send response
 const sendTokenResponse = (res, user, statusCode = 200) => {

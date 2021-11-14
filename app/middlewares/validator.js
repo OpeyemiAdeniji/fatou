@@ -53,7 +53,6 @@ const registerCustomRules = () => {
 		'file',
 		// eslint-disable-next-line no-unused-vars
 		(value, requirement, attribute) => {
-			console.log(value);
 			if (!value.isFile) {
 				return false;
 			}

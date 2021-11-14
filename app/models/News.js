@@ -2,6 +2,10 @@ import mongoose from 'mongoose';
 
 const NewsSchema = mongoose.Schema(
 	{
+		user: {
+			type: mongoose.Schema.Types.ObjectId,
+			ref: 'UserProfile',
+		},
 		poster: {
 			avatar: {
 				type: String,
@@ -23,6 +27,10 @@ const NewsSchema = mongoose.Schema(
 		image: {
 			type: String,
 			required: [true, 'A news image is required'],
+		},
+		approved: {
+			type: Boolean,
+			default: false,
 		},
 	},
 	{ timestamps: true }

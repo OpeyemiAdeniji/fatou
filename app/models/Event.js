@@ -2,6 +2,10 @@ import mongoose from 'mongoose';
 
 const EventSchema = mongoose.Schema(
 	{
+		user: {
+			type: mongoose.Schema.ObjectId,
+			ref: 'UserProfile',
+		},
 		poster: {
 			name: {
 				type: String,
@@ -51,6 +55,10 @@ const EventSchema = mongoose.Schema(
 		description: {
 			type: String,
 			required: [true, 'An event description is required'],
+		},
+		approved: {
+			type: Boolean,
+			default: false,
 		},
 	},
 	{ timestamps: true }
