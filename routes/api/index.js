@@ -10,6 +10,7 @@ import authRouter from './modules/authRoute';
 import userRouter from './modules/userRoute';
 import eventRouter from './modules/eventRoute';
 import newsRouter from './modules/newsRoute';
+import feedRouter from './modules/feedRoute';
 
 apiRoutes.use(advancedResults);
 apiRoutes.use(fileHandler);
@@ -20,5 +21,6 @@ apiRoutes.use('/auth', authRouter);
 apiRoutes.use('/account/user', userRouter);
 apiRoutes.use('/events', eventRouter);
 apiRoutes.use('/news', newsRouter);
+apiRoutes.use('/feeds', feedRouter);
 
 export default apiRoutes;
