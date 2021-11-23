@@ -139,6 +139,8 @@ export const updatePassword = asyncHandler(async (req, res, next) => {
 	sendTokenResponse(res, user);
 });
 
+
+
 export const forgotPassword = asyncHandler(async (req, res, next) => {
 	await req.validate({
 		email: 'required|email',
@@ -156,9 +158,7 @@ export const forgotPassword = asyncHandler(async (req, res, next) => {
 	await user.save({ validateBeforeSave: false });
 
 	// Create reset url
-	const resetUrl = `${req.protocol}://${req.get(
-		'host'
-	)}/v1/auth/reset-password/${resetToken}`;
+	const resetUrl = `${process.env.CLIENT_URL}/auth/password/reset/${resetToken}`;
 
 	const message = `You are receiving this email because you requested the reset of a password. Please click on this link to continue: \n\n ${resetUrl}`;
 
@@ -181,6 +181,8 @@ export const forgotPassword = asyncHandler(async (req, res, next) => {
 
 	successResponse(res, '', { user });
 });
+
+
 
 export const resetPassword = asyncHandler(async (req, res, next) => {
 	await req.validate({
@@ -209,6 +211,8 @@ export const resetPassword = asyncHandler(async (req, res, next) => {
 
 	sendTokenResponse(res, user);
 });
+
+
 
 export const getEmailVerificationToken = asyncHandler(
 	async (req, res, next) => {
