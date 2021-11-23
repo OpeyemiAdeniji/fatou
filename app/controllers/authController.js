@@ -28,7 +28,7 @@ export const signup = asyncHandler(async (req, res, next) => {
 export const signin = asyncHandler(async (req, res, next) => {
 	await req.validate({
 		email: 'required|string|email',
-		password: 'required|string|min:6',
+		password: 'required|string',
 	});
 
 	const { email, password } = req.body;
@@ -144,7 +144,7 @@ export const forgotPassword = asyncHandler(async (req, res, next) => {
 		email: 'required|email',
 	});
 
-	const user = await User.findOne({ email: req.body.email });
+	const user = await User.findOne({ email: req.body.email.toString().toLowerCase() });
 
 	if (!user) {
 		return errorResponse(next, 'There is no user with that email', 404);
@@ -285,6 +285,8 @@ const sendTokenResponse = (res, user, statusCode = 200) => {
 			Date.now() + process.env.JWT_COOKIE_EXPIRE * 24 * 60 * 60 * 1000
 		),
 		httpOnly: true,
+		sameSite: 'None',
+		secure: true
 	};
 
 	if (process.env.NODE_ENV === 'production') {
@@ -299,7 +301,7 @@ const sendTokenResponse = (res, user, statusCode = 200) => {
 		},
 	});
 
-	res.status(statusCode).cookie('token', token, options).json({
+	res.status(statusCode).cookie('session', token, options).json({
 		success: true,
 		data: user,
 		token,

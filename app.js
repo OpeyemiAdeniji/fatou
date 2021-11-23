@@ -63,11 +63,24 @@ app.use(limiter);
 // Prevent http param pollution
 app.use(hpp());
 
+
+// var whitelist = ['http://127.0.0.1:5000', 'http://localhost:5000']
+// var corsOptions = {
+//   credentials: true,
+//   origin: function (origin, callback) {
+//     if (whitelist.indexOf(origin) !== -1) {
+//       callback(null, true)
+//     } else {
+//       callback(new Error('Request Not Allowed'))
+//     }
+//   }
+// }
+
 // enable cors
 app.use(cors());
 
 // initialize routers
-app.use('/v1/', apiRoutes);
+app.use('/api/v1/', apiRoutes);
 // app.use('/', webRoutes);
 
 // set static storage folder

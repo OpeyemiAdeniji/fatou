@@ -15,6 +15,8 @@ import { protect } from '../../../app/middlewares/auth';
 
 const router = express.Router();
 
+router.use(protect);
+
 router.post('/profile/update', editProfile);
 
 // settings
@@ -23,8 +25,8 @@ router.put('/work/mentorship', changeMentorShipProfile);
 router.post('/work/experience', editAddWorkExperience);
 router.put('/work/experience/:experienceId', editAddWorkExperience);
 router.post('/work/options', editWorkOption);
-router.get('/:userId/events', protect, getSingleUserEvents);
-router.put('/:userId/events/:eventId', protect, editEvent);
-router.put('/:userId/news/:newsId', protect, editNews);
+router.get('/:userId/events', getSingleUserEvents);
+router.put('/:userId/events/:eventId', editEvent);
+router.put('/:userId/news/:newsId', editNews);
 
 export default router;
