@@ -189,10 +189,12 @@ export const resetPassword = asyncHandler(async (req, res, next) => {
 		password: 'required|string|confirmed',
 		resettoken: 'required|string',
 	});
+
 	// Get hashed token
 	const resetPasswordToken = createHash('sha256')
 		.update(req.params.resettoken)
 		.digest('hex');
+
 
 	const user = await User.findOne({
 		resetPasswordToken,
@@ -209,7 +211,7 @@ export const resetPassword = asyncHandler(async (req, res, next) => {
 	user.resetPasswordExpire = undefined;
 	await user.save();
 
-	sendTokenResponse(res, user);
+	successResponse(res, 'Password reset successful', {}, 200);
 });
 
 
