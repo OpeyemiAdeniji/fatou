@@ -105,3 +105,6 @@ dist
 
 # Uploaded files
 storage/
+*.jpg
+*.jpeg
+*.png

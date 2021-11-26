@@ -1,5 +1,5 @@
 import { config } from 'dotenv';
-import path from 'path';
+// import path from 'path';
 
 import express from 'express';
 import morgan from 'morgan';
@@ -16,7 +16,7 @@ import rateLimit from 'express-rate-limit';
 import hpp from 'hpp';
 import cors from 'cors';
 
-const __dirname = path.resolve(path.dirname(''));
+// const __dirname = path.resolve(path.dirname(''));
 
 // Load Environment
 config();
@@ -84,7 +84,7 @@ app.use('/api/v1/', apiRoutes);
 // app.use('/', webRoutes);
 
 // set static storage folder
-app.use(express.static(path.join(__dirname, 'storage')));
+app.use('/static/storage/', express.static('storage'));
 
 // Handle 404 Requests
 app.use('*', (req, res, next) => {

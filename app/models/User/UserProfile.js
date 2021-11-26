@@ -19,7 +19,8 @@ const UserProfileSchema = mongoose.Schema(
 		},
 		address: {
 			country: {
-				type: String,
+				shortName: String,
+				fullName:  String
 				// required: [true, 'Please add a country'],
 			},
 			state: {

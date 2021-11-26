@@ -27,18 +27,35 @@ export const editProfile = asyncHandler(async (req, res, next) => {
         highestEducation: 'string',
         linkedInUrl: 'string|url',
         website: 'string|url',
-        'address.country': 'required|string',
+        'address.country.shortName': 'required|string',
+		'address.country.fullName': 'required|string',
         'address.state': 'required|string',
         'address.city': 'required|string',
 	});
 
-	let user = await User.findByIdAndUpdate(req.user.id, req.body, {
-		new: true,
-		runValidators: true,
+	await User.findByIdAndUpdate(req.user.id, req.body, {
+			new: true,
+			runValidators: true,
 	});
 
+	successResponse(res, 'ok', {});
+});
+
+
+export const uploadAvatar = asyncHandler(async (req, res, next) => {
+
+	let user = await User.findById(req.user.id);
+
+	if(!user.firstName || !user.lastName) {
+		return errorResponse(next, 'please update your profile details', 400);
+	}
+
 	// check for file upload
-	if (req.files) {
+
+		if (!req.files) {
+			return errorResponse(next, 'image avatar is required', 400);
+		}
+	
 		const file = req.files.photo;
 		// check if its an image
 		if (!file.mimetype.startsWith('image')) {
@@ -55,7 +72,7 @@ export const editProfile = asyncHandler(async (req, res, next) => {
 		}
 
 		//  create custom file name
-		file.name = `profile/user_${user.firstName}_${Date.now()}${
+		file.name = `profile/user_${user.firstName}${user.lastName}_${Date.now()}${
 			path.parse(file.name).ext
 		}`;
 
@@ -68,7 +85,7 @@ export const editProfile = asyncHandler(async (req, res, next) => {
 			let photo = file.name;
 
 			// check if photo is available
-			if (user.avatar != null) {
+			if (user.avatar != null || user.avatar != '') {
 				fs.unlink(`${process.env.FILE_UPLOAD_PATH}/${user.avatar}`, (err) => {
 					if (err) {
 						// return next(new ErrorResponse("problem deleting image", 500));
@@ -79,10 +96,11 @@ export const editProfile = asyncHandler(async (req, res, next) => {
 
 			user.avatar = photo;
 			await user.save();
-		});
-	}
 
-	successResponse(res, 'ok', {});
+
+			return successResponse(res, 'upload success', {});
+		});
+
 });
 
 // eslint-disable-next-line no-unused-vars
