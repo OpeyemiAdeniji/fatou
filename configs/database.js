@@ -5,12 +5,17 @@ import colors from 'colors';
 const TESTING = process.env.NODE_ENV === 'test';
 
 const ConnectDB = async () => {
-	const conn = await mongoose.connect(process.env.MONGO_URI, {
-		useNewUrlParser: true,
-		useCreateIndex: true,
-		useFindAndModify: false,
-		useUnifiedTopology: true,
-	});
+	const conn = await mongoose.connect(
+		process.env.NODE_ENV == 'development'
+			? process.env.MONGO_URI
+			: process.env.LIVE_MONGO_URI,
+		{
+			useNewUrlParser: true,
+			useCreateIndex: true,
+			useFindAndModify: false,
+			useUnifiedTopology: true,
+		}
+	);
 
 	!TESTING &&
 		console.log(
