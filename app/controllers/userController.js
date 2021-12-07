@@ -104,6 +104,23 @@ export const uploadAvatar = asyncHandler(async (req, res, next) => {
 });
 
 // eslint-disable-next-line no-unused-vars
+export const getUserAllWorkExperience = asyncHandler(async (req, res, next) => {
+	// get user all experiences
+	let experiences = await UserWorkExperience.find({user: req.user.id});
+
+	successResponse(res, 'ok', { experiences });
+});
+
+
+// eslint-disable-next-line no-unused-vars
+export const deleteUserWorkExperience = asyncHandler(async (req, res, next) => {
+	// get user all experiences
+	await UserWorkExperience.findOneAndDelete({user: req.user.id, _id: req.params.experienceId});
+
+	successResponse(res, 'ok', { });
+});
+
+// eslint-disable-next-line no-unused-vars
 export const editAddWorkExperience = asyncHandler(async (req, res, next) => {
 	await req.validate({
 		company: 'required|string',
@@ -136,7 +153,23 @@ export const editAddWorkExperience = asyncHandler(async (req, res, next) => {
 	}
 
 	successResponse(res, 'ok', { experience });
+});	
+
+
+// eslint-disable-next-line no-unused-vars
+export const userWorkOptions = asyncHandler(async (req, res, next) => {
+											
+	// get user workoption or update
+	let workOption = await UserWorkOption.findOne({ user: req.user.id });
+
+	if(!workOption){
+		workOption = null
+	}
+
+	successResponse(res, 'ok', { workOption });
 });
+
+
 
 // eslint-disable-next-line no-unused-vars
 export const editWorkOption = asyncHandler(async (req, res, next) => {
@@ -190,6 +223,21 @@ export const editWorkOption = asyncHandler(async (req, res, next) => {
 });
 
 // eslint-disable-next-line no-unused-vars
+export const getPreferences = asyncHandler(async (req, res, next) => {
+	let userPreferences = await UserPreferences.findOne({ user: req.user.id });
+
+	if(!userPreferences){
+		userPreferences = await UserPreferences.create({
+			user: req.user.id
+		});
+	}
+
+	successResponse(res, 'ok', { userPreferences });
+});
+
+
+
+// eslint-disable-next-line no-unused-vars
 export const changePreferences = asyncHandler(async (req, res, next) => {
 	await req.validate({
 		'receiveEmails.partners': 'required|boolean',
@@ -219,34 +267,49 @@ export const changePreferences = asyncHandler(async (req, res, next) => {
 	successResponse(res, 'settings successfully updated', { userPreferences });
 });
 
+
+// eslint-disable-next-line no-unused-vars
+export const getMentorShipProfile = asyncHandler(async (req, res, next) => {
+
+	let mentorshipProfile = await MentorShip.findOne({ user: req.user.id });
+
+	if (!mentorshipProfile) {
+		mentorshipProfile = null
+	}
+
+	successResponse(res, 'ok', {
+		mentorshipProfile,
+	});
+});
+
 // eslint-disable-next-line no-unused-vars
 export const changeMentorShipProfile = asyncHandler(async (req, res, next) => {
 	await req.validate({
-		'seeking.seek': 'required|boolean',
-		'seeking.opportunities': 'required|array',
-		'open.open': 'required|boolean',
-		'open.opportunities': 'required|array',
+		'seeking.seek': 'required|string|in:yes,no',
+		'seeking.opportunities': 'array',
+		'openTo.open': 'required|string|in:yes,no',
+		'openTo.opportunities': 'array',
 	});
 
-	const { seeking, open } = req.body;
+	const { seeking, openTo } = req.body;
 
 	let mentorshipProfile = await MentorShip.findOne({ user: req.user.id });
 
 	if (mentorshipProfile) {
 		// check seeking
-		if (seeking.seek) {
-			mentorshipProfile.mentorship.isSeeking = true;
-			mentorshipProfile.mentorship.opportunities = seeking.opportunities;
+		if (seeking.seek === 'yes') {
+			mentorshipProfile.seeking.isSeeking = 'yes';
+			mentorshipProfile.seeking.opportunities = seeking.opportunities;
 		} else {
-			mentorshipProfile.mentorship.isSeeking = false;
-			mentorshipProfile.mentorship.opportunities = [];
+			mentorshipProfile.seeking.isSeeking = 'no';
+			mentorshipProfile.seeking.opportunities = [];
 		}
 
-		if (seeking.open) {
-			mentorshipProfile.open.isOpen = true;
-			mentorshipProfile.open.opportunities = open.opportunities;
+		if (openTo.open === 'yes') {
+			mentorshipProfile.open.isOpen = 'yes';
+			mentorshipProfile.open.opportunities = openTo.opportunities;
 		} else {
-			mentorshipProfile.open.isOpen = false;
+			mentorshipProfile.open.isOpen = 'no';
 			mentorshipProfile.open.opportunities = [];
 		}
 
@@ -255,19 +318,19 @@ export const changeMentorShipProfile = asyncHandler(async (req, res, next) => {
 		mentorshipProfile = new MentorShip();
 		mentorshipProfile.user = req.user.id;
 
-		if (seeking.seek) {
-			mentorshipProfile.mentorship.isSeeking = true;
-			mentorshipProfile.mentorship.opportunities = seeking.opportunities;
+		if (seeking.seek === 'yes') {
+			mentorshipProfile.seeking.isSeeking = 'yes';
+			mentorshipProfile.seeking.opportunities = seeking.opportunities;
 		} else {
-			mentorshipProfile.mentorship.isSeeking = false;
-			mentorshipProfile.mentorship.opportunities = [];
+			mentorshipProfile.seeking.isSeeking = 'no';
+			mentorshipProfile.seeking.opportunities = [];
 		}
 
-		if (seeking.open) {
-			mentorshipProfile.open.isOpen = true;
-			mentorshipProfile.open.opportunities = open.opportunities;
+		if (openTo.open === 'yes') {
+			mentorshipProfile.open.isOpen = 'yes';
+			mentorshipProfile.open.opportunities = openTo.opportunities;
 		} else {
-			mentorshipProfile.open.isOpen = false;
+			mentorshipProfile.open.isOpen = 'no';
 			mentorshipProfile.open.opportunities = [];
 		}
 

@@ -12,7 +12,12 @@ import {
 	editProfile,
 	editWorkOption,
 	removeFromContacts,
-	uploadAvatar
+	uploadAvatar,
+	getPreferences,
+	userWorkOptions,
+	getUserAllWorkExperience,
+	deleteUserWorkExperience,
+	getMentorShipProfile
 } from '../../../app/controllers/userController';
 import { protect } from '../../../app/middlewares/auth';
 
@@ -25,14 +30,32 @@ router.put('/profile/update/avatar', uploadAvatar);
 
 
 // settings
+router.get('/settings', getPreferences);
 router.put('/settings/update', changePreferences);
+
+// mentorship
+router.get('/work/mentorship', getMentorShipProfile);
 router.put('/work/mentorship', changeMentorShipProfile);
+
+// experience
+router.get('/work/experience', getUserAllWorkExperience);
 router.post('/work/experience', editAddWorkExperience);
 router.put('/work/experience/:experienceId', editAddWorkExperience);
-router.post('/work/options', editWorkOption);
+router.delete('/work/experience/:experienceId', deleteUserWorkExperience);
+
+
+// options
+router.get('/work/options', userWorkOptions);
+router.put('/work/options', editWorkOption);
+
+// events
 router.get('/:userId/events', getSingleUserEvents);
 router.put('/:userId/events/:eventId', editEvent);
+
+// news
 router.put('/:userId/news/:newsId', editNews);
+
+// contacts
 router.put('/:userId/contacts/add', addToContacts);
 router.put('/:userId/contacts/remove', removeFromContacts);
 
