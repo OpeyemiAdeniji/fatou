@@ -131,6 +131,9 @@ const UserProfileSchema = mongoose.Schema(
 			type: Boolean,
 			default: false,
 		},
+		skills: {
+			type: [String]
+		},
 		social: {
 			facebook: {
 				token: String,

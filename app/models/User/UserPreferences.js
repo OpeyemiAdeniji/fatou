@@ -24,6 +24,18 @@ const UserPreferencesSchema = mongoose.Schema(
 				type: Boolean,
 				default: false,
 			},
+			jobPosts: {
+				type: Boolean,
+				default: false,
+			},
+			newMessages: {
+				type: Boolean,
+				default: false,
+			},
+			newPosts: {
+				type: Boolean,
+				default: false,
+			}
 		},
 		accountActive: {
 			type: Boolean,

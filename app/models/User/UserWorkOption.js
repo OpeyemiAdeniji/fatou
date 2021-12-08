@@ -31,9 +31,11 @@ const UserWorkOptionSchema = mongoose.Schema(
 			type: Number,
 			min: [1, 'Minimum salary cannot be lower than one'],
 		},
+		resumeUrl: {
+			type: String
+		},
 		skills: {
-			type: [String],
-			min: [1, 'At least one skill is required'],
+			type: [String]
 		},
 	},
 	{ timestamps: true }

@@ -38,6 +38,23 @@ export const editProfile = asyncHandler(async (req, res, next) => {
 			runValidators: true,
 	});
 
+	let currentWork = await UserWorkExperience.findOne({user: req.user.id, isCurrent: true});
+
+	if(!currentWork){
+		currentWork = await UserWorkExperience.create(
+				{
+					user: req.user.id, 
+					company: req.body.company, 
+					title: req.body.jobTitle,
+					isCurrent: true
+				});
+	}else{ 
+		currentWork.company = req.body.company;
+		currentWork.title = req.body.jobTitle;
+
+		await currentWork.save();
+	}
+
 	successResponse(res, 'ok', {});
 });
 
@@ -170,6 +187,27 @@ export const userWorkOptions = asyncHandler(async (req, res, next) => {
 });
 
 
+// eslint-disable-next-line no-unused-vars
+export const editSKills = asyncHandler(async (req, res, next) => {
+	await req.validate({
+		skills: 'required|array'
+	});
+
+	const {
+		skills,
+	} = req.body;
+
+	let  user = await User.findById(req.user.id);
+
+	user.skills =  skills;
+
+	await user.save();
+
+
+	successResponse(res, 'skills successfully updated', {  });
+});
+
+
 
 // eslint-disable-next-line no-unused-vars
 export const editWorkOption = asyncHandler(async (req, res, next) => {
@@ -179,8 +217,7 @@ export const editWorkOption = asyncHandler(async (req, res, next) => {
 		preferredLocation: 'required|string',
 		yearsOfExperience: 'required|numeric',
 		seeking: 'required|string',
-		salary: 'required|numeric',
-		skills: 'required|array',
+		salary: 'required|numeric'
 	});
 
 	const {
@@ -219,7 +256,56 @@ export const editWorkOption = asyncHandler(async (req, res, next) => {
 		});
 	}
 
-	successResponse(res, 'work option successfully updated', { workOption });
+	// check for resume upload
+
+	if(req.files){
+	
+		const file = req.files.resume;
+		// check if its an image
+		if (!file.mimetype.includes('application/pdf')) {
+			return errorResponse(next, 'file should be pdf ' + file.mimetype, 400);
+		}
+
+		// check file size
+		if (file.size > process.env.MAX_FILE_UPLOAD) {
+			return errorResponse(
+				next,
+				`file size exceeds ${process.env.MAX_FILE_UPLOAD}`,
+				400
+			);
+		}
+
+		//  create custom file name
+		file.name = `resume/user_${req.user.firstName}${req.user.lastName}_${Date.now()}${
+			path.parse(file.name).ext
+		}`;
+
+	await file.mv(`${process.env.FILE_UPLOAD_PATH}/${file.name}`, async (err) => {
+			if (err) {
+				// console.log(err);
+				return errorResponse(next, 'problem with file upload', 500);
+			}
+
+			let resume = file.name;
+
+			// check if photo is available
+			if (workOption.resumeUrl != null ||workOption.resumeUrl != '') {
+				fs.unlink(`${process.env.FILE_UPLOAD_PATH}/${workOption.resumeUrl}`, (err) => {
+					if (err) {
+						// return next(new ErrorResponse("problem deleting image", 500));
+						console.log('file not found');
+					}
+				});
+			}
+
+			workOption.resumeUrl = resume;
+			await workOption.save();
+		});
+
+		return successResponse(res, 'upload success', {});
+	}
+
+	return successResponse(res, 'work option successfully updated', { workOption });
 });
 
 // eslint-disable-next-line no-unused-vars
@@ -244,6 +330,9 @@ export const changePreferences = asyncHandler(async (req, res, next) => {
 		'receiveEmails.blackpeer': 'required|boolean',
 		'receiveEmails.message': 'required|boolean',
 		'receiveEmails.answer': 'required|boolean',
+		'receiveEmails.newPosts': 'required|boolean',
+		'receiveEmails.jobPosts': 'required|boolean',
+		'receiveEmails.newMessages': 'required|boolean',
 	});
 
 	const { receiveEmails } = req.body;
@@ -255,6 +344,9 @@ export const changePreferences = asyncHandler(async (req, res, next) => {
 		userPreferences.receiveEmails.blackpeer = receiveEmails.blackpeer;
 		userPreferences.receiveEmails.message = receiveEmails.message;
 		userPreferences.receiveEmails.answer = receiveEmails.answer;
+		userPreferences.receiveEmails.newPosts = receiveEmails.newPosts;
+		userPreferences.receiveEmails.jobPosts = receiveEmails.jobPosts;
+		userPreferences.receiveEmails.newMessages = receiveEmails.newMessages;
 
 		await userPreferences.save();
 	} else {
