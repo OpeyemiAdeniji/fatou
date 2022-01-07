@@ -63,6 +63,12 @@ const UserProfileSchema = mongoose.Schema(
 			type: String,
 			enum: sectors,
 		},
+		isCommunityMember: { type: Boolean, default: false},
+		reasonForJoining: {
+			type: [String],
+			enum: ['network', 'seeking-employment', 'seeking-mentor', 'hiring'],
+			required: [true, 'Reason for joining is required']
+		},
 		college: {
 			type: String,
 		},

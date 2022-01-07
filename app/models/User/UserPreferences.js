@@ -35,6 +35,24 @@ const UserPreferencesSchema = mongoose.Schema(
 			newPosts: {
 				type: Boolean,
 				default: false,
+			},
+			updateAboutFatou: {
+				type: Boolean,
+				default: false,
+			},
+			receiveMessageFrom: {
+				fromEveryone: {
+					type: Boolean,
+					default: false,
+				},
+				fromNetwork: {
+					type: Boolean,
+					default: false,
+				},
+				oldAccount: {
+					type: Boolean,
+					default: false,
+				}
 			}
 		},
 		accountActive: {
