@@ -19,7 +19,7 @@ const UserWorkExperienceSchema = mongoose.Schema(
 		date: {
 			start: String,
 			end: String,
-		}
+		},
 	},
 	{ timestamps: true }
 );

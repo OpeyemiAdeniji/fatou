@@ -333,6 +333,10 @@ export const changePreferences = asyncHandler(async (req, res, next) => {
 		'receiveEmails.newPosts': 'required|boolean',
 		'receiveEmails.jobPosts': 'required|boolean',
 		'receiveEmails.newMessages': 'required|boolean',
+		'receiveEmails.updateAboutFatou': 'required|boolean',
+		'receiveEmails.receiveMessageFrom.fromEveryone': 'required|boolean',
+		'receiveEmails.receiveMessageFrom.fromNetwork': 'required|boolean',
+		'receiveEmails.receiveMessageFrom.oldAccount': 'required|boolean',
 	});
 
 	const { receiveEmails } = req.body;
@@ -340,13 +344,7 @@ export const changePreferences = asyncHandler(async (req, res, next) => {
 	let userPreferences = await UserPreferences.findOne({ user: req.user.id });
 
 	if (userPreferences) {
-		userPreferences.receiveEmails.partners = receiveEmails.partners;
-		userPreferences.receiveEmails.blackpeer = receiveEmails.blackpeer;
-		userPreferences.receiveEmails.message = receiveEmails.message;
-		userPreferences.receiveEmails.answer = receiveEmails.answer;
-		userPreferences.receiveEmails.newPosts = receiveEmails.newPosts;
-		userPreferences.receiveEmails.jobPosts = receiveEmails.jobPosts;
-		userPreferences.receiveEmails.newMessages = receiveEmails.newMessages;
+		userPreferences.receiveEmails = receiveEmails
 
 		await userPreferences.save();
 	} else {
