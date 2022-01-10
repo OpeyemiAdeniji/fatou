@@ -22,15 +22,11 @@ export const editProfile = asyncHandler(async (req, res, next) => {
         company: 'required|string',
         jobTitle: 'required|string',
         industry: 'required|string',
-        sector: 'required|string',
+        // sector: 'required|string',
         college: 'string',
         highestEducation: 'string',
         linkedInUrl: 'string|url',
-        website: 'string|url',
-        'address.country.shortName': 'required|string',
-		'address.country.fullName': 'required|string',
-        'address.state': 'required|string',
-        'address.city': 'required|string',
+        website: 'string|url'
 	});
 
 	await User.findByIdAndUpdate(req.user.id, req.body, {
@@ -38,22 +34,41 @@ export const editProfile = asyncHandler(async (req, res, next) => {
 			runValidators: true,
 	});
 
-	let currentWork = await UserWorkExperience.findOne({user: req.user.id, isCurrent: true});
+	// let currentWork = await UserWorkExperience.findOne({user: req.user.id, isCurrent: true});
 
-	if(!currentWork){
-		currentWork = await UserWorkExperience.create(
-				{
-					user: req.user.id, 
-					company: req.body.company, 
-					title: req.body.jobTitle,
-					isCurrent: true
-				});
-	}else{ 
-		currentWork.company = req.body.company;
-		currentWork.title = req.body.jobTitle;
+	// if(!currentWork){
+	// 	currentWork = await UserWorkExperience.create(
+	// 			{
+	// 				user: req.user.id, 
+	// 				company: req.body.company, 
+	// 				title: req.body.jobTitle,
+	// 				isCurrent: true
+	// 			});
+	// }else{ 
+	// 	currentWork.company = req.body.company;
+	// 	currentWork.title = req.body.jobTitle;
 
-		await currentWork.save();
-	}
+	// 	await currentWork.save();
+	// }
+
+	successResponse(res, 'ok', {});
+});
+
+
+// eslint-disable-next-line no-unused-vars
+export const updateAddress = asyncHandler(async (req, res, next) => {
+	await req.validate({
+		'address.country.shortName': 'required|string',
+		'address.country.fullName': 'required|string',
+		'address.state': 'required|string',
+		'address.city': 'required|string'
+	});
+
+
+	await User.findByIdAndUpdate(req.user.id, req.body, {
+			new: true,
+			runValidators: true,
+	});
 
 	successResponse(res, 'ok', {});
 });
