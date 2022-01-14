@@ -1,9 +1,9 @@
 import express from 'express';
-import {
-	editEvent,
-	getSingleUserEvents,
-} from '../../../app/controllers/eventController';
-import { editNews } from '../../../app/controllers/newsController';
+// import {
+// 	editEvent,
+// 	getSingleUserEvents,
+// } from '../../../app/controllers/eventController';
+// import { editNews } from '../../../app/controllers/newsController';
 import {
 	addToContacts,
 	changeMentorShipProfile,
@@ -52,12 +52,12 @@ router.delete('/work/experience/:experienceId', deleteUserWorkExperience);
 router.get('/work/options', userWorkOptions);
 router.put('/work/options', editWorkOption);
 
-// events
-router.get('/:userId/events', getSingleUserEvents);
-router.put('/:userId/events/:eventId', editEvent);
+// // events
+// router.get('/:userId/events', getSingleUserEvents);
+// router.put('/:userId/events/:eventId', editEvent);
 
-// news
-router.put('/:userId/news/:newsId', editNews);
+// // news
+// router.put('/:userId/news/:newsId', editNews);
 
 // contacts
 router.put('/:userId/contacts/add', addToContacts);
