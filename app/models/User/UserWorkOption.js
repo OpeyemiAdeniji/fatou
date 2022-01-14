@@ -11,32 +11,32 @@ const UserWorkOptionSchema = mongoose.Schema(
 			type: Boolean,
 			default: false,
 		},
-		open: {
+		openToWorkBanner: {
+			type: Boolean,
+			default: false,
+		},
+		openToWorkRemotely: {
 			type: Boolean,
 			default: false,
 		},
 		preferredLocation: {
-			type: String,
-			// required: [true, 'Please add a location'],
+			type: [String]
 		},
 		yearsOfExperience: {
-			type: Number,
-			// required: [true, 'Please add a number of years'],
+			type: Number
 		},
 		seeking: {
-			type: String,
-			// required: [true, 'Please add a seeking type'],
+			// type: String
+			type: Boolean,
+			default: false,
 		},
-		salary: {
-			type: Number,
-			min: [1, 'Minimum salary cannot be lower than one'],
+		salaryRange: {
+			type: String,
+			trim: true
 		},
 		resumeUrl: {
 			type: String
-		},
-		skills: {
-			type: [String]
-		},
+		}
 	},
 	{ timestamps: true }
 );

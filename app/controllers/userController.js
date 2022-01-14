@@ -228,21 +228,22 @@ export const editSKills = asyncHandler(async (req, res, next) => {
 export const editWorkOption = asyncHandler(async (req, res, next) => {
 	await req.validate({
 		looking: 'required|boolean',
-		open: 'required|boolean',
+		openToWorkBanner: 'required|boolean',
+		openToWorkRemotely: 'required|boolean',
 		preferredLocation: 'required|string',
 		yearsOfExperience: 'required|numeric',
 		seeking: 'required|string',
-		salary: 'required|numeric'
+		salaryRange: 'required|string'
 	});
 
 	const {
 		looking,
-		open,
+		openToWorkBanner,
 		preferredLocation,
 		yearsOfExperience,
 		seeking,
-		salary,
-		skills,
+		salaryRange,
+		openToWorkRemotely
 	} = req.body;
 
 	// create user workoption or update
@@ -250,24 +251,24 @@ export const editWorkOption = asyncHandler(async (req, res, next) => {
 
 	if (workOption) {
 		workOption.looking = looking;
-		workOption.open = open;
+		workOption.open = openToWorkBanner;
 		workOption.preferredLocation = preferredLocation;
 		workOption.yearsOfExperience = yearsOfExperience;
 		workOption.seeking = seeking;
-		workOption.salary = salary;
-		workOption.skills = skills;
+		workOption.salaryRange = salaryRange;
+		workOption.openToWorkRemotely = openToWorkRemotely
 
 		await workOption.save();
 	} else {
 		workOption = await UserWorkOption.create({
 			user: req.user.id,
 			looking,
-			open,
+			openToWorkBanner,
 			preferredLocation,
 			yearsOfExperience,
 			seeking,
-			salary,
-			skills,
+			openToWorkRemotely,
+			salaryRange,
 		});
 	}
 
