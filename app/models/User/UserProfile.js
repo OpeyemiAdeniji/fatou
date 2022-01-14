@@ -151,6 +151,10 @@ const UserProfileSchema = mongoose.Schema(
 				token: String,
 			},
 		},
+		accountPaused: {
+			type: Boolean,
+			default: false
+		}
 	},
 	{ timestamps: true }
 );

@@ -292,7 +292,7 @@ export const editWorkOption = asyncHandler(async (req, res, next) => {
 		}
 
 		//  create custom file name
-		file.name = `resume/user_${req.user.firstName}${req.user.lastName}_${Date.now()}${
+		file.name = `resume/Resume_${req.user.firstName}${req.user.lastName}_${Date.now()}${
 			path.parse(file.name).ext
 		}`;
 
