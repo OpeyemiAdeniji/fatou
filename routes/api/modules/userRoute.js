@@ -21,12 +21,20 @@ import {
 	editSKills,
 	updateAddress
 } from '../../../app/controllers/userController';
+
+import { pauseAccount, deleteAccount} from '../../../app/controllers/safetyController'
+
 import { protect } from '../../../app/middlewares/auth';
 
 const router = express.Router();
 
 router.use(protect);
 
+// safety
+router.put('/safety/account/pause', pauseAccount);
+router.put('/safety/account/delete', deleteAccount);
+
+// 
 router.post('/profile/update', editProfile);
 router.post('/profile/address/update', updateAddress);
 router.put('/profile/update/avatar', uploadAvatar);
@@ -62,5 +70,7 @@ router.put('/work/options', editWorkOption);
 // contacts
 router.put('/:userId/contacts/add', addToContacts);
 router.put('/:userId/contacts/remove', removeFromContacts);
+
+
 
 export default router;

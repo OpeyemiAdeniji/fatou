@@ -53,6 +53,12 @@ export const signin = asyncHandler(async (req, res, next) => {
 		user = await User.findOne({ email });
 	}
 
+	if(user.accountPaused){
+		user.accountPaused = false;
+
+		await user.save();
+	}
+
 	sendTokenResponse(res, user);
 });
 
