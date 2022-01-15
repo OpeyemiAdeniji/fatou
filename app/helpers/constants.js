@@ -149,6 +149,7 @@ const industries = [
 ];
 
 const sectors = [
+	'none',
 	'design',
 	'designer_ux',
 	'dev_ops',

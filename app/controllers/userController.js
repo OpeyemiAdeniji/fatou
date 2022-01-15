@@ -22,16 +22,48 @@ export const editProfile = asyncHandler(async (req, res, next) => {
         company: 'required|string',
         jobTitle: 'required|string',
         industry: 'required|string',
-        sector: 'required|string',
+        // sector: 'required|string',
         college: 'string',
         highestEducation: 'string',
         linkedInUrl: 'string|url',
-        website: 'string|url',
-        'address.country.shortName': 'required|string',
-		'address.country.fullName': 'required|string',
-        'address.state': 'required|string',
-        'address.city': 'required|string',
+        website: 'string|url'
 	});
+
+	await User.findByIdAndUpdate(req.user.id, req.body, {
+			new: true,
+			runValidators: true,
+	});
+
+	// let currentWork = await UserWorkExperience.findOne({user: req.user.id, isCurrent: true});
+
+	// if(!currentWork){
+	// 	currentWork = await UserWorkExperience.create(
+	// 			{
+	// 				user: req.user.id, 
+	// 				company: req.body.company, 
+	// 				title: req.body.jobTitle,
+	// 				isCurrent: true
+	// 			});
+	// }else{ 
+	// 	currentWork.company = req.body.company;
+	// 	currentWork.title = req.body.jobTitle;
+
+	// 	await currentWork.save();
+	// }
+
+	successResponse(res, 'ok', {});
+});
+
+
+// eslint-disable-next-line no-unused-vars
+export const updateAddress = asyncHandler(async (req, res, next) => {
+	await req.validate({
+		'address.country.shortName': 'required|string',
+		'address.country.fullName': 'required|string',
+		'address.state': 'required|string',
+		'address.city': 'required|string'
+	});
+
 
 	await User.findByIdAndUpdate(req.user.id, req.body, {
 			new: true,
@@ -170,27 +202,48 @@ export const userWorkOptions = asyncHandler(async (req, res, next) => {
 });
 
 
+// eslint-disable-next-line no-unused-vars
+export const editSKills = asyncHandler(async (req, res, next) => {
+	await req.validate({
+		skills: 'required|array'
+	});
+
+	const {
+		skills,
+	} = req.body;
+
+	let  user = await User.findById(req.user.id);
+
+	user.skills =  skills;
+
+	await user.save();
+
+
+	successResponse(res, 'skills successfully updated', {  });
+});
+
+
 
 // eslint-disable-next-line no-unused-vars
 export const editWorkOption = asyncHandler(async (req, res, next) => {
 	await req.validate({
 		looking: 'required|boolean',
-		open: 'required|boolean',
+		openToWorkBanner: 'required|boolean',
+		openToWorkRemotely: 'required|boolean',
 		preferredLocation: 'required|string',
 		yearsOfExperience: 'required|numeric',
 		seeking: 'required|string',
-		salary: 'required|numeric',
-		skills: 'required|array',
+		salaryRange: 'required|string'
 	});
 
 	const {
 		looking,
-		open,
+		openToWorkBanner,
 		preferredLocation,
 		yearsOfExperience,
 		seeking,
-		salary,
-		skills,
+		salaryRange,
+		openToWorkRemotely
 	} = req.body;
 
 	// create user workoption or update
@@ -198,28 +251,77 @@ export const editWorkOption = asyncHandler(async (req, res, next) => {
 
 	if (workOption) {
 		workOption.looking = looking;
-		workOption.open = open;
+		workOption.open = openToWorkBanner;
 		workOption.preferredLocation = preferredLocation;
 		workOption.yearsOfExperience = yearsOfExperience;
 		workOption.seeking = seeking;
-		workOption.salary = salary;
-		workOption.skills = skills;
+		workOption.salaryRange = salaryRange;
+		workOption.openToWorkRemotely = openToWorkRemotely
 
 		await workOption.save();
 	} else {
 		workOption = await UserWorkOption.create({
 			user: req.user.id,
 			looking,
-			open,
+			openToWorkBanner,
 			preferredLocation,
 			yearsOfExperience,
 			seeking,
-			salary,
-			skills,
+			openToWorkRemotely,
+			salaryRange,
 		});
 	}
 
-	successResponse(res, 'work option successfully updated', { workOption });
+	// check for resume upload
+
+	if(req.files){
+	
+		const file = req.files.resume;
+		// check if its an image
+		if (!file.mimetype.includes('application/pdf')) {
+			return errorResponse(next, 'file should be pdf ' + file.mimetype, 400);
+		}
+
+		// check file size
+		if (file.size > process.env.MAX_FILE_UPLOAD) {
+			return errorResponse(
+				next,
+				`file size exceeds ${process.env.MAX_FILE_UPLOAD}`,
+				400
+			);
+		}
+
+		//  create custom file name
+		file.name = `resume/user_${req.user.firstName}${req.user.lastName}_${Date.now()}${
+			path.parse(file.name).ext
+		}`;
+
+	await file.mv(`${process.env.FILE_UPLOAD_PATH}/${file.name}`, async (err) => {
+			if (err) {
+				// console.log(err);
+				return errorResponse(next, 'problem with file upload', 500);
+			}
+
+			let resume = file.name;
+
+			// check if photo is available
+			if (workOption.resumeUrl != null ||workOption.resumeUrl != '') {
+				fs.unlink(`${process.env.FILE_UPLOAD_PATH}/${workOption.resumeUrl}`, (err) => {
+					if (err) {
+						// return next(new ErrorResponse("problem deleting image", 500));
+						console.log('file not found');
+					}
+				});
+			}
+
+			workOption.resumeUrl = resume;
+			await workOption.save();
+		});
+
+		return successResponse(res, 'upload success', {});
+	}
+
+	return successResponse(res, 'work option successfully updated', { workOption });
 });
 
 // eslint-disable-next-line no-unused-vars
@@ -244,6 +346,13 @@ export const changePreferences = asyncHandler(async (req, res, next) => {
 		'receiveEmails.blackpeer': 'required|boolean',
 		'receiveEmails.message': 'required|boolean',
 		'receiveEmails.answer': 'required|boolean',
+		'receiveEmails.newPosts': 'required|boolean',
+		'receiveEmails.jobPosts': 'required|boolean',
+		'receiveEmails.newMessages': 'required|boolean',
+		'receiveEmails.updateAboutFatou': 'required|boolean',
+		'receiveEmails.receiveMessageFrom.fromEveryone': 'required|boolean',
+		'receiveEmails.receiveMessageFrom.fromNetwork': 'required|boolean',
+		'receiveEmails.receiveMessageFrom.oldAccount': 'required|boolean',
 	});
 
 	const { receiveEmails } = req.body;
@@ -251,10 +360,7 @@ export const changePreferences = asyncHandler(async (req, res, next) => {
 	let userPreferences = await UserPreferences.findOne({ user: req.user.id });
 
 	if (userPreferences) {
-		userPreferences.receiveEmails.partners = receiveEmails.partners;
-		userPreferences.receiveEmails.blackpeer = receiveEmails.blackpeer;
-		userPreferences.receiveEmails.message = receiveEmails.message;
-		userPreferences.receiveEmails.answer = receiveEmails.answer;
+		userPreferences.receiveEmails = receiveEmails
 
 		await userPreferences.save();
 	} else {

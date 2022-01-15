@@ -17,7 +17,9 @@ import {
 	userWorkOptions,
 	getUserAllWorkExperience,
 	deleteUserWorkExperience,
-	getMentorShipProfile
+	getMentorShipProfile,
+	editSKills,
+	updateAddress
 } from '../../../app/controllers/userController';
 import { protect } from '../../../app/middlewares/auth';
 
@@ -26,7 +28,9 @@ const router = express.Router();
 router.use(protect);
 
 router.post('/profile/update', editProfile);
+router.post('/profile/address/update', updateAddress);
 router.put('/profile/update/avatar', uploadAvatar);
+router.put('/profile/update/skills', editSKills)
 
 
 // settings

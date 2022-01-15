@@ -15,10 +15,11 @@ const UserWorkExperienceSchema = mongoose.Schema(
 			type: String,
 			required: [true, 'Please add a job title'],
 		},
+		isCurrent: false,
 		date: {
 			start: String,
 			end: String,
-		}
+		},
 	},
 	{ timestamps: true }
 );

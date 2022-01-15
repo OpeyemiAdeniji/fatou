@@ -12,11 +12,14 @@ export const signup = asyncHandler(async (req, res, next) => {
 	await req.validate({
 		email: 'required|string|email|unique:userProfile,email',
 		password: 'required|string|confirmed|min:6',
+		reasonForJoining: 'required|array',
+		isCommunityMember: 'required|boolean'
 	});
 
-	const { email, password } = req.body;
+	let { email, password, isCommunityMember, reasonForJoining } = req.body;
 
-	const user = await User.create({ email, password });
+	email =  email.toString().toLowerCase();
+	const user = await User.create({ email, password, isCommunityMember, reasonForJoining });
 
 	let token = await EmailVerificationToken.create({ user: user._id });
 
