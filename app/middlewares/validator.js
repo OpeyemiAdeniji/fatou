@@ -16,8 +16,7 @@ const registerCustomRules = () => {
 			}
 			const modelName = requirements[0];
 			const modelField = requirements[1];
-			const formattedModelName =
-				modelName.charAt(0).toUpperCase() + modelName.slice(1);
+			const formattedModelName = modelName.charAt(0).toUpperCase() + modelName.slice(1);
 			const Model = mongoose.connection.model(formattedModelName);
 			const foundModel = await Model.findOne({ [modelField]: value });
 			if (!foundModel) {
@@ -39,8 +38,7 @@ const registerCustomRules = () => {
 			}
 			const modelName = requirements[0];
 			const modelField = requirements[1];
-			const formattedModelName =
-				modelName.charAt(0).toUpperCase() + modelName.slice(1);
+			const formattedModelName = modelName.charAt(0).toUpperCase() + modelName.slice(1);
 			const Model = mongoose.connection.model(formattedModelName);
 			const foundModel = await Model.findOne({ [modelField]: value });
 			if (foundModel) {
@@ -52,14 +50,25 @@ const registerCustomRules = () => {
 	Validator.register(
 		'file',
 		// eslint-disable-next-line no-unused-vars
-		(value, requirement, attribute) => {
+		(value, requirement, attribute, passes) => {
 			if (!value.isFile) {
-				return false;
+				return passes(false, `The ${attribute} is not a file`);
 			}
-			return true;
-		},
-		'The :attribute is not a file'
+			if (value.size > process.env.MAX_FILE_UPLOAD) {
+				return passes(false, `The ${attribute} file size exceeds ${process.env.MAX_FILE_UPLOAD}`);
+			}
+			return passes();
+		}
 	);
+	Validator.register('mime', (value, requirement, attribute, passes) => {
+		if (!requirement) {
+			return passes(false, 'exists requirements are expected');
+		}
+		if (!value.mimetype.startsWith(requirement)) {
+			return passes(false, `The ${attribute} is not a(n) ${requirement}`);
+		}
+		return passes();
+	});
 };
 
 registerCustomRules();
@@ -84,11 +93,7 @@ const validate = (req, res, next) => {
 				customMessages,
 				(err, status) => {
 					if (!status) {
-						return errorResponse(
-							next,
-							convertValidationErrorsToString(err),
-							422
-						);
+						return errorResponse(next, convertValidationErrorsToString(err), 422);
 					}
 					resolve();
 				}
