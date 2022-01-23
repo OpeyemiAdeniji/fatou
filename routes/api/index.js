@@ -11,8 +11,8 @@ import userRouter from './modules/userRoute';
 // import eventRouter from './modules/eventRoute';
 // import newsRouter from './modules/newsRoute';
 import feedRouter from './modules/feedRoute';
-import dataProviderRoutes from './modules/dataProviderRoutes';
-
+import dataProviderRouter from './modules/dataProviderRoute';
+import vcRouter from './modules/vcRoute';
 
 apiRoutes.use(advancedResults);
 apiRoutes.use(fileHandler);
@@ -24,7 +24,7 @@ apiRoutes.use('/account/user', userRouter);
 // apiRoutes.use('/events', eventRouter);
 // apiRoutes.use('/news', newsRouter);
 apiRoutes.use('/feeds', feedRouter);
-apiRoutes.use('/data/provider', dataProviderRoutes);
-
+apiRoutes.use('/data/provider', dataProviderRouter);
+apiRoutes.use('/vcs', vcRouter);
 
 export default apiRoutes;
