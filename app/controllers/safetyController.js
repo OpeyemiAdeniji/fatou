@@ -40,7 +40,7 @@ export const pauseAccount = asyncHandler(async (req, res, next) => {
 
 	successResponse(res, 'ok', {message: 'Your account has being paused successfully, and would be reactivated your on next sigin'});
 });
-
+    
 export const deleteAccount = asyncHandler(async (req, res, next) => {
 
     // request validation
