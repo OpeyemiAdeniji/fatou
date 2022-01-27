@@ -17,6 +17,9 @@ const UserProfileSchema = mongoose.Schema(
 		pronouns: {
 			type: String,
 		},
+		bio: {
+			type: String,
+		},
 		address: {
 			country: {
 				shortName: String,
@@ -66,7 +69,7 @@ const UserProfileSchema = mongoose.Schema(
 		isCommunityMember: { type: Boolean, default: false},
 		reasonForJoining: {
 			type: [String],
-			enum: ['network', 'seeking-employment', 'seeking-mentor', 'hiring'],
+			enum: ['network', 'seeking-employment', 'seeking-mentor', 'hiring', 'seeking-internship', 'seeking-cofounder', 'becoming-cofounder'],
 			required: [true, 'Reason for joining is required']
 		},
 		college: {

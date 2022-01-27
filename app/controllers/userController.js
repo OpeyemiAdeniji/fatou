@@ -22,6 +22,7 @@ export const editProfile = asyncHandler(async (req, res, next) => {
         company: 'required|string',
         jobTitle: 'required|string',
         industry: 'required|string',
+		bio: 'required|string',
         // sector: 'required|string',
         college: 'string',
         highestEducation: 'string',
