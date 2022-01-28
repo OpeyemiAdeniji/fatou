@@ -11,6 +11,11 @@ export const createFounder = asyncHandler(async (req, res, next) => {
 		stage: 'required|string',
 		category: 'required|string',
 		company: 'required|string|exists:company,_id',
+		hqLocation: 'required|string',
+		foundingTeam: 'required|array',
+		'foundingTeam.*': 'required|string',
+		year: 'required|date',
+		mediaSpotlight: 'array',
 	});
 
 	const founder = await Founder.create(req.body, { new: true, runValidators: true });
@@ -25,6 +30,11 @@ export const updateFounder = asyncHandler(async (req, res, next) => {
 		stage: 'required|string',
 		category: 'required|string',
 		company: 'required|string|exists:company,_id',
+		hqLocation: 'required|string',
+		foundingTeam: 'required|array',
+		'foundingTeam.*': 'required|string',
+		year: 'required|date',
+		mediaSpotlight: 'array',
 	});
 
 	let founder = await Founder.findById(req.params.founderId);

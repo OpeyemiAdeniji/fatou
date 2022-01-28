@@ -20,6 +20,21 @@ const FounderSchema = mongoose.Schema(
 			ref: 'Company',
 			required: true,
 		},
+		hqLocation: {
+			type: String,
+			required: [true, 'A founder HQ is required'],
+		},
+		year: {
+			type: Date,
+			required: [true, 'A founding year is required'],
+		},
+		foundingTeam: {
+			type: [String],
+			required: [true, 'A founding year is required'],
+		},
+		mediaSpotlight: {
+			type: [String],
+		},
 	},
 	{ timestamps: true }
 );

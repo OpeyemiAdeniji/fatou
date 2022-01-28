@@ -13,14 +13,19 @@ export const createVC = asyncHandler(async (req, res, next) => {
 		description: 'required|string',
 		location: 'required|string',
 		category: 'required|string',
-		'fund.from': 'required|string',
-		'fund.to': 'required|string',
+		averageCheckSize:
+			'required|string|in:50K-100K,10k-50k ,100-250K,250-500K,1M-5M,5M-10M,10M-20M,10M-20M,20M-50M,UNCAPPED',
+		website: 'string|url',
+		'social.facebook': 'string|url',
 		'social.instagram': 'string|url',
 		'social.twitter': 'string|url',
 		'social.linkedIn': 'string|url',
+		'social.crunchbase': 'string|url',
 	});
 
-	const Vc = await VC.create(req.body, { new: true, runValidators: true });
+	const fields = req.validated();
+
+	const Vc = await VC.create(fields, { new: true, runValidators: true });
 
 	const fileStore = storeVcImage(req.files.logo, Vc);
 
@@ -42,14 +47,22 @@ export const updateVC = asyncHandler(async (req, res, next) => {
 		description: 'required|string',
 		location: 'required|string',
 		category: 'required|string',
-		'fund.from': 'required|string',
-		'fund.to': 'required|string',
+		averageCheckSize:
+			'required|string|in:50K-100K,10k-50k ,100-250K,250-500K,1M-5M,5M-10M,10M-20M,10M-20M,20M-50M,UNCAPPED',
+		website: 'string|url',
+		'social.facebook': 'string|url',
 		'social.instagram': 'string|url',
 		'social.twitter': 'string|url',
 		'social.linkedIn': 'string|url',
+		'social.crunchbase': 'string|url',
 	});
 
-	const Vc = await VC.findByIdAndUpdate(req.params.vcId, req.body, { new: true, runValidators: true });
+	const fields = req.validated();
+
+	const Vc = await VC.findByIdAndUpdate(req.params.vcId, fields, {
+		new: true,
+		runValidators: true,
+	});
 
 	const fileStore = updateVcImage(req.files.logo, Vc);
 
@@ -65,6 +78,12 @@ export const updateVC = asyncHandler(async (req, res, next) => {
 
 // eslint-disable-next-line no-unused-vars
 export const getAllVCs = asyncHandler(async (req, res, next) => {
+	res.advancedResults(VC);
+});
+
+// eslint-disable-next-line no-unused-vars
+export const getAllApprovedVCs = asyncHandler(async (req, res, next) => {
+	req.query = { ...req.query, approved: true };
 	res.advancedResults(VC);
 });
 

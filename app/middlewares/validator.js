@@ -84,23 +84,51 @@ const validator = async (body, rules, customMessages, callback) => {
 };
 
 const validate = (req, res, next) => {
-	req.validate = async (rules, customMessages = {}) => {
+	req.validated = () => {
+		return {};
+	};
+	req.validate = async (rules, locations = ['params', 'query', 'body', 'files'], customMessages = {}) => {
 		// eslint-disable-next-line no-unused-vars
 		return await new Promise((resolve, reject) => {
+			let dataToValidate = getFieldsToValidate(req, locations);
 			validator(
-				{ ...req.params, ...req.query, ...req.body, ...req.files },
+				dataToValidate,
 				rules,
-				customMessages,
 				(err, status) => {
 					if (!status) {
 						return errorResponse(next, convertValidationErrorsToString(err), 422);
 					}
+					req.validated = () => getValidatedFields(rules, dataToValidate);
 					resolve();
-				}
+				},
+				customMessages
 			);
 		});
 	};
 	next();
+};
+
+const getFieldsToValidate = (req, locations) => {
+	const possibleFields = ['params', 'query', 'body', 'files'];
+	let fields = {};
+	possibleFields.forEach((possibleField) => {
+		if (locations.length > 0 && locations.includes(possibleField)) {
+			fields = { ...fields, ...req[possibleField] };
+		}
+	});
+	return fields;
+};
+
+const getValidatedFields = (rules, dataToValidate) => {
+	var validatedObject = {};
+
+	Object.keys(dataToValidate).forEach((key) => {
+		if (dataToValidate[key] !== undefined && Object.keys(rules).includes(key)) {
+			validatedObject[key] = dataToValidate[key];
+		}
+	});
+
+	return validatedObject;
 };
 
 const convertValidationErrorsToString = (err) => {
