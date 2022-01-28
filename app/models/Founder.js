@@ -9,11 +9,11 @@ const FounderSchema = mongoose.Schema(
 		},
 		stage: {
 			type: String,
-			required: [true, ' A stage is required'],
+			required: [true, 'A stage is required'],
 		},
 		category: {
 			type: String,
-			required: [true, ' A category is required'],
+			required: [true, 'A category is required'],
 		},
 		company: {
 			type: mongoose.Schema.ObjectId,
@@ -30,10 +30,14 @@ const FounderSchema = mongoose.Schema(
 		},
 		foundingTeam: {
 			type: [String],
-			required: [true, 'A founding year is required'],
+			required: [true, 'A founding team is required'],
 		},
 		mediaSpotlight: {
 			type: [String],
+		},
+		approved: {
+			type: Boolean,
+			default: false,
 		},
 	},
 	{ timestamps: true }

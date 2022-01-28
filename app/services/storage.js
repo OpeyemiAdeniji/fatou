@@ -1,9 +1,8 @@
-import { errorResponse } from '../helpers/response';
 import path from 'path';
 import fs from 'fs';
 
 const createCustomFileName = (model, file) => {
-	return `${model._id}_${Date.now()}.             ${path.parse(file.name).ext}`;
+	return `${model._id}_${Date.now()}.${path.parse(file.name).ext}`;
 };
 
 const saveFile = (file, fileName) => {
