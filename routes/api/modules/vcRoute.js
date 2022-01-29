@@ -11,7 +11,7 @@ import { protect, admin } from '../../../app/middlewares/auth';
 
 const router = express.Router();
 
-// router.use(protect);
+router.use(protect);
 
 router.route('/').post(createVC).get(admin, getAllVCs);
 router.get('/approved', getAllApprovedVCs);
