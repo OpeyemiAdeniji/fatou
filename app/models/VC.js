@@ -4,7 +4,6 @@ const VCSchema = mongoose.Schema(
 	{
 		logo: {
 			type: String,
-			required: [true, 'A VC logo is required'],
 		},
 		name: {
 			type: String,
@@ -27,7 +26,7 @@ const VCSchema = mongoose.Schema(
 			required: [true, 'An average check size is required'],
 			enum: [
 				'50K-100K',
-				'10k-50k ',
+				'10k-50k',
 				'100-250K',
 				'250-500K',
 				'1M-5M',

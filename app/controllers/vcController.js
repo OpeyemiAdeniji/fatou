@@ -23,11 +23,11 @@ export const createVC = asyncHandler(async (req, res, next) => {
 		'social.crunchbase': 'string|url',
 	});
 
-	const fields = req.validated();
+	const { logo, ...fields } = req.validated();
 
-	const Vc = await VC.create(fields, { new: true, runValidators: true });
+	const Vc = await VC.create(fields);
 
-	const fileStore = storeVcImage(req.files.logo, Vc);
+	const fileStore = storeVcImage(logo, Vc);
 
 	if (!fileStore.status) {
 		return errorResponse(next, fileStore.error, 500);
@@ -57,14 +57,14 @@ export const updateVC = asyncHandler(async (req, res, next) => {
 		'social.crunchbase': 'string|url',
 	});
 
-	const fields = req.validated();
+	const { logo, ...fields } = req.validated();
 
 	const Vc = await VC.findByIdAndUpdate(req.params.vcId, fields, {
 		new: true,
 		runValidators: true,
 	});
 
-	const fileStore = updateVcImage(req.files.logo, Vc);
+	const fileStore = updateVcImage(logo, Vc);
 
 	if (!fileStore.status) {
 		return errorResponse(next, fileStore.error, 500);

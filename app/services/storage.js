@@ -2,22 +2,26 @@ import path from 'path';
 import fs from 'fs';
 
 const createCustomFileName = (model, file) => {
-	return `${model._id}_${Date.now()}.${path.parse(file.name).ext}`;
+	return `${model._id}_${Date.now()}${path.parse(file.name).ext}`;
 };
 
-const saveFile = (file, fileName) => {
-	file.mv(`${process.env.FILE_UPLOAD_PATH}/vc/${fileName}`, async (err) => {
-		if (err) {
-			console.log(err);
-			throw 'problem with file upload';
-		}
+const saveFile = (file, fileName, folder) => {
+	const dir = `${process.env.FILE_UPLOAD_PATH}/${folder}/`;
+	fs.mkdir(dir, { recursive: true }, (err) => {
+		if (err) throw err;
+		file.mv(`${dir}${fileName}`, async (err) => {
+			if (err) {
+				console.log(err);
+				throw 'problem with file upload';
+			}
+		});
 	});
 };
 
 export const deleteExistingFile = (existingFileName, folder) => {
 	fs.unlink(`${process.env.FILE_UPLOAD_PATH}/${folder}/${existingFileName}`, (err) => {
 		if (err) {
-			console.log('image not found');
+			console.log('file not found');
 		}
 	});
 };
@@ -28,7 +32,7 @@ export const storeVcImage = (logo, Vc) => {
 	response.name = `vc_${createCustomFileName(Vc, logo)}`;
 
 	try {
-		saveFile(logo, response.name);
+		saveFile(logo, response.name, 'vc');
 	} catch (error) {
 		response.status = false;
 		response.error = error;
@@ -49,7 +53,7 @@ export const updateVcImage = (logo, Vc) => {
 		response.error = error;
 	}
 
-	deleteExistingFile('vc', Vc.logo);
+	deleteExistingFile(Vc.logo, 'vc');
 
 	return response;
 };
