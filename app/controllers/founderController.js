@@ -13,7 +13,6 @@ export const createFounder = asyncHandler(async (req, res, next) => {
 		company: 'required|string|exists:company,_id',
 		hqLocation: 'required|string',
 		foundingTeam: 'required|array',
-		'foundingTeam.*': 'required|string',
 		year: 'required|date',
 		mediaSpotlight: 'array',
 	});
@@ -68,4 +67,11 @@ export const deleteFounder = asyncHandler(async (req, res, next) => {
 	await Founder.deleteOne({ _id: req.params.founderId });
 
 	successResponse(res, 'Founder deleted successfully', {});
+});
+
+
+// eslint-disable-next-line no-unused-vars
+export const getAllApprovedFounders = asyncHandler(async (req, res, next) => {
+	req.query = { ...req.query, approved: true };
+	res.advancedResults(Founder);
 });

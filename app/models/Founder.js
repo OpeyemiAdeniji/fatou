@@ -37,7 +37,7 @@ const FounderSchema = mongoose.Schema(
 		},
 		approved: {
 			type: Boolean,
-			default: false,
+			default: true,
 		},
 	},
 	{ timestamps: true }
