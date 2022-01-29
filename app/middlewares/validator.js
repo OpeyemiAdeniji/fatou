@@ -94,14 +94,14 @@ const validate = (req, res, next) => {
 			validator(
 				dataToValidate,
 				rules,
+				customMessages,
 				(err, status) => {
 					if (!status) {
 						return errorResponse(next, convertValidationErrorsToString(err), 422);
 					}
 					req.validated = () => getValidatedFields(rules, dataToValidate);
 					resolve();
-				},
-				customMessages
+				}
 			);
 		});
 	};
