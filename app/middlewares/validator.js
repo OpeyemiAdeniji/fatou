@@ -8,11 +8,11 @@ const registerCustomRules = () => {
 		// eslint-disable-next-line no-unused-vars
 		async (value, requirement, attribute, passes) => {
 			if (!requirement) {
-				return passes(false, 'exists requirements are expected');
+				return passes(false, 'exists requirements are expected.');
 			}
 			const requirements = requirement.split(',');
 			if (requirements.length !== 2) {
-				return passes(false, 'exists requirements must be exactly 2');
+				return passes(false, 'exists requirements must be exactly 2.');
 			}
 			const modelName = requirements[0];
 			const modelField = requirements[1];
@@ -20,7 +20,7 @@ const registerCustomRules = () => {
 			const Model = mongoose.connection.model(formattedModelName);
 			const foundModel = await Model.findOne({ [modelField]: value });
 			if (!foundModel) {
-				return passes(false, `The ${attribute} does not exist`);
+				return passes(false, `The ${attribute} does not exist.`);
 			}
 			return passes();
 		}
@@ -30,11 +30,11 @@ const registerCustomRules = () => {
 		// eslint-disable-next-line no-unused-vars
 		async (value, requirement, attribute, passes) => {
 			if (!requirement) {
-				return passes(false, 'exists requirements are expected');
+				return passes(false, 'unique requirements are expected.');
 			}
 			const requirements = requirement.split(',');
 			if (requirements.length !== 2) {
-				return passes(false, 'exists requirements must be exactly 2');
+				return passes(false, 'unique requirements must be exactly 2.');
 			}
 			const modelName = requirements[0];
 			const modelField = requirements[1];
@@ -42,30 +42,30 @@ const registerCustomRules = () => {
 			const Model = mongoose.connection.model(formattedModelName);
 			const foundModel = await Model.findOne({ [modelField]: value });
 			if (foundModel) {
-				return passes(false, `The ${attribute} already exists`);
+				return passes(false, `The ${attribute} already exists.`);
 			}
 			return passes();
 		}
 	);
-	Validator.register(
+	Validator.registerAsync(
 		'file',
 		// eslint-disable-next-line no-unused-vars
 		(value, requirement, attribute, passes) => {
 			if (!value.isFile) {
-				return passes(false, `The ${attribute} is not a file`);
+				return passes(false, `The ${attribute} is not a file.`);
 			}
 			if (value.size > process.env.MAX_FILE_UPLOAD) {
-				return passes(false, `The ${attribute} file size exceeds ${process.env.MAX_FILE_UPLOAD}`);
+				return passes(false, `The ${attribute} file size exceeds ${process.env.MAX_FILE_UPLOAD}.`);
 			}
 			return passes();
 		}
 	);
-	Validator.register('mime', (value, requirement, attribute, passes) => {
+	Validator.registerAsync('mime', (value, requirement, attribute, passes) => {
 		if (!requirement) {
-			return passes(false, 'exists requirements are expected');
+			return passes(false, 'mime type requirements are expected.');
 		}
-		if (!value.mimetype.startsWith(requirement)) {
-			return passes(false, `The ${attribute} is not a(n) ${requirement}`);
+		if (!value.mimetype || !value.mimetype.startsWith(requirement)) {
+			return passes(false, `The ${attribute} is not a(n) ${requirement}.`);
 		}
 		return passes();
 	});
@@ -91,18 +91,13 @@ const validate = (req, res, next) => {
 		// eslint-disable-next-line no-unused-vars
 		return await new Promise((resolve, reject) => {
 			let dataToValidate = getFieldsToValidate(req, locations);
-			validator(
-				dataToValidate,
-				rules,
-				customMessages,
-				(err, status) => {
-					if (!status) {
-						return errorResponse(next, convertValidationErrorsToString(err), 422);
-					}
-					req.validated = () => getValidatedFields(rules, dataToValidate);
-					resolve();
+			validator(dataToValidate, rules, customMessages, (err, status) => {
+				if (!status) {
+					return errorResponse(next, convertValidationErrorsToString(err), 422);
 				}
-			);
+				req.validated = () => getValidatedFields(rules, dataToValidate);
+				resolve();
+			});
 		});
 	};
 	next();
@@ -137,10 +132,16 @@ const convertValidationErrorsToString = (err) => {
 
 	// eslint-disable-next-line no-unused-vars
 	Object.entries(err.errors).forEach(([key, value]) => {
-		errors = errors.concat(value);
+		if (value.length > 1) {
+			value.forEach((combinedError) => {
+				errors = errors.concat(combinedError + ' ');
+			});
+		} else {
+			errors = errors.concat(value + ' ');
+		}
 	});
 	errors.forEach((errorValue) => {
-		let errorValueWithoutPeriod = errorValue.split('.')[0];
+		let errorValueWithoutPeriod = errorValue.split('. ')[0];
 		if (errors.indexOf(errorValue) != errors.length - 1) {
 			errorValueWithoutPeriod += ', ';
 		}
