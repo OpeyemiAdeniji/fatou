@@ -14,7 +14,7 @@ export const createVC = asyncHandler(async (req, res, next) => {
 		location: 'required|string',
 		category: 'required|string',
 		averageCheckSize:
-			'required|string|in:50K-100K,10k-50k ,100-250K,250-500K,1M-5M,5M-10M,10M-20M,10M-20M,20M-50M,UNCAPPED',
+			'required|string|in:50K-100K,10k-50k,100-250K,250-500K,1M-5M,5M-10M,10M-20M,10M-20M,20M-50M,UNCAPPED',
 		website: 'string|url',
 		'social.facebook': 'string|url',
 		'social.instagram': 'string|url',

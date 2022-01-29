@@ -7,6 +7,10 @@ const UserWorkOptionSchema = mongoose.Schema(
 			ref: 'UserProfile',
             required: true,
 		},
+		disabled: {
+			type: Boolean,
+			default: false,
+		},
 		looking: {
 			type: Boolean,
 			default: false,
@@ -26,14 +30,11 @@ const UserWorkOptionSchema = mongoose.Schema(
 			type: Number
 		},
 		seeking: {
-			// type: String
-			type: Boolean,
-			default: false,
-		},
-		salaryRange: {
 			type: String,
-			trim: true
+			enum: ['visa', 'sponsorship', 'none'],
+			default: 'none'
 		},
+		salaryRange: Number,
 		resumeUrl: {
 			type: String
 		}
