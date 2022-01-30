@@ -25,7 +25,8 @@ const CompanySchema = mongoose.Schema(
 			required: [true, 'A company found date is required'],
 		},
 		foundingRound: {
-			types: String,
+			type: String,
+			required: [true, 'A founding round is required'],
 			enum: [
 				'Private',
 				'Angel',
@@ -38,7 +39,6 @@ const CompanySchema = mongoose.Schema(
 				'Series F',
 				'Public',
 			],
-			required: [true, 'A founding round is required'],
 		},
 		employeeCount: {
 			type: Number,
