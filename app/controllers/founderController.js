@@ -1,23 +1,59 @@
 import { errorResponse, successResponse } from '../helpers/response';
 import asyncHandler from '../middlewares/async';
+import Company from '../models/Company';
 
 // models
 import Founder from '../models/Founder';
+import { storeCompanyImage, updateCompanyImage } from '../services/storage';
 
 // eslint-disable-next-line no-unused-vars
 export const createFounder = asyncHandler(async (req, res, next) => {
 	await req.validate({
 		user: 'required|string|exists:user,_id',
-		stage: 'required|string',
-		category: 'required|string',
-		company: 'required|string|exists:company,_id',
-		hqLocation: 'required|string',
-		foundingTeam: 'required|array',
-		year: 'required|date',
-		mediaSpotlight: 'array',
+		logo: 'required|file',
+		email: 'required|email',
+		name: 'required|string',
+		sector: 'required|string',
+		founded: 'required|date',
+		foundingRound:
+			'required|string|in:Private,Angel,Seed,Series A,Series B,Series C,Series D,Series E,Series F,Public',
+		employeeCount: 'required|integer|min:1',
+		additionalFounder: 'string',
+		bio: 'required|string',
+		website: 'string|url',
+		facebook: 'string|url',
+		instagram: 'string|url',
+		twitter: 'string|url',
+		linkedIn: 'string|url',
+		crunchbase: 'string|url',
+		hiring: 'required|boolean',
 	});
 
-	const founder = await Founder.create(req.body, { new: true, runValidators: true });
+	const { logo, fields } = req.validated();
+
+	const data = {
+		...fields,
+		social: {
+			facebook: fields.facebook,
+			instagram: fields.instagram,
+			twitter: fields.twitter,
+			linkedIn: fields.linkedIn,
+			crunchbase: fields.crunchbase,
+		},
+	};
+
+	const company = await Company.create(data);
+
+	const fileStore = storeCompanyImage(logo, company);
+
+	if (!fileStore.status) {
+		return errorResponse(next, fileStore.error, 500);
+	}
+
+	company.logo = fileStore.name;
+	await company.save();
+
+	const founder = await Founder.create({ user: fields.user, comapany: company._id });
 
 	successResponse(res, 'Founder created successfully', founder, 201);
 });
@@ -25,16 +61,37 @@ export const createFounder = asyncHandler(async (req, res, next) => {
 // eslint-disable-next-line no-unused-vars
 export const updateFounder = asyncHandler(async (req, res, next) => {
 	await req.validate({
-		user: 'required|string|exists:user,_id',
-		stage: 'required|string',
-		category: 'required|string',
-		company: 'required|string|exists:company,_id',
-		hqLocation: 'required|string',
-		foundingTeam: 'required|array',
-		'foundingTeam.*': 'required|string',
-		year: 'required|date',
-		mediaSpotlight: 'array',
+		logo: 'file',
+		email: 'required|email',
+		name: 'required|string',
+		sector: 'required|string',
+		founded: 'required|date',
+		foundingRound:
+			'required|string|in:Private,Angel,Seed,Series A,Series B,Series C,Series D,Series E,Series F,Public',
+		employeeCount: 'required|integer|min:1',
+		additionalFounder: 'string',
+		bio: 'required|string',
+		website: 'string|url',
+		facebook: 'string|url',
+		instagram: 'string|url',
+		twitter: 'string|url',
+		linkedIn: 'string|url',
+		crunchbase: 'string|url',
+		hiring: 'required|boolean',
 	});
+
+	const { logo, fields } = req.validated();
+
+	const data = {
+		...fields,
+		social: {
+			facebook: fields.facebook,
+			instagram: fields.instagram,
+			twitter: fields.twitter,
+			linkedIn: fields.linkedIn,
+			crunchbase: fields.crunchbase,
+		},
+	};
 
 	let founder = await Founder.findById(req.params.founderId);
 
@@ -42,12 +99,25 @@ export const updateFounder = asyncHandler(async (req, res, next) => {
 		return errorResponse(next, 'Not authorized to update this founder', 401);
 	}
 
-	const founderToUpdate = await Founder.findByIdAndUpdate(req.params.founderId, req.body, {
+	const company = await Founder.findByIdAndUpdate(founder.company._id, data, {
 		new: true,
 		runValidators: true,
 	});
 
-	successResponse(res, 'Founder updated successfully', founderToUpdate);
+	if (logo) {
+		const fileStore = updateCompanyImage(logo, company);
+
+		if (!fileStore.status) {
+			return errorResponse(next, fileStore.error, 500);
+		}
+
+		company.logo = fileStore.name;
+		await company.save();
+	}
+
+	founder = await Founder.findById(req.params.founderId);
+
+	successResponse(res, 'Founder updated successfully', founder);
 });
 
 // eslint-disable-next-line no-unused-vars
@@ -68,7 +138,6 @@ export const deleteFounder = asyncHandler(async (req, res, next) => {
 
 	successResponse(res, 'Founder deleted successfully', {});
 });
-
 
 // eslint-disable-next-line no-unused-vars
 export const getAllApprovedFounders = asyncHandler(async (req, res, next) => {

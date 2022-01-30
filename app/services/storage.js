@@ -57,3 +57,35 @@ export const updateVcImage = (logo, Vc) => {
 
 	return response;
 };
+
+export const storeCompanyImage = (logo, Company) => {
+	let response = { status: true, name: '', error: '' };
+
+	response.name = `company_${createCustomFileName(Company, logo)}`;
+
+	try {
+		saveFile(logo, response.name, 'company');
+	} catch (error) {
+		response.status = false;
+		response.error = error;
+	}
+
+	return response;
+};
+
+export const updateCompanyImage = (logo, Company) => {
+	let response = { status: true, name: '', error: '' };
+
+	response.name = `company_${createCustomFileName(Company, logo)}`;
+
+	try {
+		saveFile(logo, response.name);
+	} catch (error) {
+		response.status = false;
+		response.error = error;
+	}
+
+	deleteExistingFile(Company.logo, 'company');
+
+	return response;
+};

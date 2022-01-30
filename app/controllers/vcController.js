@@ -16,16 +16,27 @@ export const createVC = asyncHandler(async (req, res, next) => {
 		averageCheckSize:
 			'required|string|in:10k-50k,50K-100K,100-250K,250-500K,1M-5M,5M-10M,10M-20M,10M-20M,20M-50M,UNCAPPED',
 		website: 'string|url',
-		'social.facebook': 'string|url',
-		'social.instagram': 'string|url',
-		'social.twitter': 'string|url',
-		'social.linkedIn': 'string|url',
-		'social.crunchbase': 'string|url',
+		facebook: 'string|url',
+		instagram: 'string|url',
+		twitter: 'string|url',
+		linkedIn: 'string|url',
+		crunchbase: 'string|url',
 	});
 
 	const { logo, ...fields } = req.validated();
 
-	const Vc = await VC.create(fields);
+	let data = {
+		...fields,
+		social: {
+			facebook: fields.facebook,
+			instagram: fields.instagram,
+			twitter: fields.twitter,
+			linkedIn: fields.linkedIn,
+			crunchbase: fields.crunchbase,
+		},
+	};
+
+	const Vc = await VC.create(data);
 
 	const fileStore = storeVcImage(logo, Vc);
 
@@ -50,28 +61,41 @@ export const updateVC = asyncHandler(async (req, res, next) => {
 		averageCheckSize:
 			'required|string|in:50K-100K,10k-50k ,100-250K,250-500K,1M-5M,5M-10M,10M-20M,10M-20M,20M-50M,UNCAPPED',
 		website: 'string|url',
-		'social.facebook': 'string|url',
-		'social.instagram': 'string|url',
-		'social.twitter': 'string|url',
-		'social.linkedIn': 'string|url',
-		'social.crunchbase': 'string|url',
+		facebook: 'string|url',
+		instagram: 'string|url',
+		twitter: 'string|url',
+		linkedIn: 'string|url',
+		crunchbase: 'string|url',
 	});
 
 	const { logo, ...fields } = req.validated();
 
-	const Vc = await VC.findByIdAndUpdate(req.params.vcId, fields, {
+	let data = {
+		...fields,
+		social: {
+			facebook: fields.facebook,
+			instagram: fields.instagram,
+			twitter: fields.twitter,
+			linkedIn: fields.linkedIn,
+			crunchbase: fields.crunchbase,
+		},
+	};
+
+	const Vc = await VC.findByIdAndUpdate(req.params.vcId, data, {
 		new: true,
 		runValidators: true,
 	});
 
-	const fileStore = updateVcImage(logo, Vc);
+	if (logo) {
+		const fileStore = updateVcImage(logo, Vc);
 
-	if (!fileStore.status) {
-		return errorResponse(next, fileStore.error, 500);
+		if (!fileStore.status) {
+			return errorResponse(next, fileStore.error, 500);
+		}
+
+		Vc.logo = fileStore.name;
+		await Vc.save();
 	}
-
-	Vc.logo = fileStore.name;
-	await Vc.save();
 
 	successResponse(res, 'VC updated successfully', Vc);
 });
