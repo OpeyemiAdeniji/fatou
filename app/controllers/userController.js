@@ -228,13 +228,14 @@ export const editSKills = asyncHandler(async (req, res, next) => {
 // eslint-disable-next-line no-unused-vars
 export const editWorkOption = asyncHandler(async (req, res, next) => {
 	await req.validate({
+		disabled: 'required|boolean',
 		looking: 'required|boolean',
 		openToWorkBanner: 'required|boolean',
 		openToWorkRemotely: 'required|boolean',
 		preferredLocation: 'required|string',
 		yearsOfExperience: 'required|numeric',
-		seeking: 'required|string',
-		salaryRange: 'required|string'
+		seeking: 'required|string|in:none,visa,sponsorship',
+		salaryRange: 'numeric'
 	});
 
 	const {
@@ -244,7 +245,8 @@ export const editWorkOption = asyncHandler(async (req, res, next) => {
 		yearsOfExperience,
 		seeking,
 		salaryRange,
-		openToWorkRemotely
+		openToWorkRemotely,
+		disabled
 	} = req.body;
 
 	// create user workoption or update
@@ -258,6 +260,7 @@ export const editWorkOption = asyncHandler(async (req, res, next) => {
 		workOption.seeking = seeking;
 		workOption.salaryRange = salaryRange;
 		workOption.openToWorkRemotely = openToWorkRemotely
+		workOption.disabled = disabled
 
 		await workOption.save();
 	} else {
@@ -270,7 +273,12 @@ export const editWorkOption = asyncHandler(async (req, res, next) => {
 			seeking,
 			openToWorkRemotely,
 			salaryRange,
+			disabled
 		});
+
+		if(req.files){
+			return errorResponse(next, 'resume not uploaded', 400);
+		}
 	}
 
 	// check for resume upload
@@ -297,7 +305,7 @@ export const editWorkOption = asyncHandler(async (req, res, next) => {
 			path.parse(file.name).ext
 		}`;
 
-	await file.mv(`${process.env.FILE_UPLOAD_PATH}/${file.name}`, async (err) => {
+			await file.mv(`${process.env.FILE_UPLOAD_PATH}/${file.name}`, async (err) => {
 			if (err) {
 				// console.log(err);
 				return errorResponse(next, 'problem with file upload', 500);
@@ -394,7 +402,7 @@ export const changeMentorShipProfile = asyncHandler(async (req, res, next) => {
 	await req.validate({
 		'seeking.seek': 'required|string|in:yes,no',
 		'seeking.opportunities': 'array',
-		'openTo.open': 'required|string|in:yes,no',
+		'openTo.open': 'required|string|in:yes,no',	
 		'openTo.opportunities': 'array',
 	});
 
@@ -420,6 +428,7 @@ export const changeMentorShipProfile = asyncHandler(async (req, res, next) => {
 			mentorshipProfile.open.opportunities = [];
 		}
 
+
 		await mentorshipProfile.save();
 	} else {
 		mentorshipProfile = new MentorShip();
@@ -440,6 +449,7 @@ export const changeMentorShipProfile = asyncHandler(async (req, res, next) => {
 			mentorshipProfile.open.isOpen = 'no';
 			mentorshipProfile.open.opportunities = [];
 		}
+
 
 		await mentorshipProfile.save();
 	}
