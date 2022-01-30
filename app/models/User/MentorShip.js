@@ -8,10 +8,6 @@ const UserMentorShipAvailSchema = mongoose.Schema(
       ref: 'UserProfile',
       required: true,
     },
-    disabled: {
-			type: Boolean,
-			default: false,
-		},
     seeking: {
       isSeeking: {
         type: String,

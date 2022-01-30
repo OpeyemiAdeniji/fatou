@@ -400,14 +400,13 @@ export const getMentorShipProfile = asyncHandler(async (req, res, next) => {
 // eslint-disable-next-line no-unused-vars
 export const changeMentorShipProfile = asyncHandler(async (req, res, next) => {
 	await req.validate({
-		'disabled': 'required|boolean',
 		'seeking.seek': 'required|string|in:yes,no',
 		'seeking.opportunities': 'array',
 		'openTo.open': 'required|string|in:yes,no',	
 		'openTo.opportunities': 'array',
 	});
 
-	const { seeking, openTo, disabled } = req.body;
+	const { seeking, openTo } = req.body;
 
 	let mentorshipProfile = await MentorShip.findOne({ user: req.user.id });
 
@@ -429,7 +428,6 @@ export const changeMentorShipProfile = asyncHandler(async (req, res, next) => {
 			mentorshipProfile.open.opportunities = [];
 		}
 
-		mentorshipProfile.disabled = disabled
 
 		await mentorshipProfile.save();
 	} else {
@@ -452,8 +450,6 @@ export const changeMentorShipProfile = asyncHandler(async (req, res, next) => {
 			mentorshipProfile.open.opportunities = [];
 		}
 
-
-		mentorshipProfile.disabled = disabled
 
 		await mentorshipProfile.save();
 	}
