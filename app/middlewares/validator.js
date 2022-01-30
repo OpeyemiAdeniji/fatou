@@ -132,13 +132,9 @@ const convertValidationErrorsToString = (err) => {
 
 	// eslint-disable-next-line no-unused-vars
 	Object.entries(err.errors).forEach(([key, value]) => {
-		if (value.length > 1) {
-			value.forEach((combinedError) => {
-				errors = errors.concat(combinedError + ' ');
-			});
-		} else {
-			errors = errors.concat(value + ' ');
-		}
+		value.forEach((error) => {
+			errors = errors.concat(error + ' ');
+		});
 	});
 	errors.forEach((errorValue) => {
 		let errorValueWithoutPeriod = errorValue.split('. ')[0];
