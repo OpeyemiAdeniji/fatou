@@ -15,7 +15,6 @@ import dataProviderRouter from './modules/dataProviderRoute';
 import vcRouter from './modules/vcRoute';
 import founderRoute from './modules/founderRoute';
 
-
 apiRoutes.use(advancedResults);
 apiRoutes.use(fileHandler);
 apiRoutes.use(validate);

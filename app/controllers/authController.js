@@ -148,8 +148,6 @@ export const updatePassword = asyncHandler(async (req, res, next) => {
 	sendTokenResponse(res, user);
 });
 
-
-
 export const forgotPassword = asyncHandler(async (req, res, next) => {
 	await req.validate({
 		email: 'required|email',
